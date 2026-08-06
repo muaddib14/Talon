@@ -3104,34 +3104,6 @@ html.lenis body {
   max-width: 900px;
 }
 
-.ws-sandbox-toggle {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 48px;
-  padding: 0 14px;
-  border: 1px solid rgba(112, 119, 119, 0.35);
-  border-radius: var(--radius-small);
-  background: transparent;
-  color: var(--color-slate-deep);
-  font-family: var(--font-matter);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-
-.ws-sandbox-toggle:hover {
-  color: var(--color-silver-mist);
-}
-
-.ws-sandbox-toggle--on {
-  color: #062421;
-  border-color: transparent;
-  background: var(--color-mint, #cbfffc);
-}
-
 .ws-composer-input {
   flex: 1;
   min-width: 0;

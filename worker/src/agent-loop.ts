@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import type { Sandbox } from "e2b";
 import { createSandbox } from "./sandbox.js";
 import { executeTool } from "./tools/index.js";
 import { callLlm, type LlmSettings, type NeutralMessage, type ToolCall } from "./llm.js";
@@ -36,11 +37,14 @@ export async function runAgentLoop(
   prompt: string,
   settings: LlmSettings
 ): Promise<AgentResult> {
-  const sandbox = await createSandbox();
   const history: NeutralMessage[] = [{ role: "user", content: prompt }];
 
   const files: Record<string, string> = {};
   const commands: AgentResult["commands"] = [];
+
+  // Sandbox is created lazily — only spun up the moment the model actually
+  // calls a tool. Plain conversational replies never touch e2b at all.
+  let sandbox: Sandbox | null = null;
 
   try {
     let iterations = 0;
@@ -56,6 +60,10 @@ export async function runAgentLoop(
       }
 
       history.push({ role: "assistant", text: reply.text, toolCalls: reply.toolCalls });
+
+      if (!sandbox) {
+        sandbox = await createSandbox();
+      }
 
       for (const call of reply.toolCalls as ToolCall[]) {
         const output = await executeTool(sandbox, call.name, call.input);
@@ -90,6 +98,6 @@ export async function runAgentLoop(
       commands,
     };
   } finally {
-    await sandbox.kill();
+    if (sandbox) await sandbox.kill();
   }
 }
