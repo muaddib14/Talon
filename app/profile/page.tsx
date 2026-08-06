@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import {
   ArrowLeft,
   Check,
@@ -57,27 +57,28 @@ function formatDate(iso: string): string {
 }
 
 export default function ProfilePage() {
+  return (
+    <Suspense fallback={<ProfileSkeleton />}>
+      <ProfilePageContent />
+    </Suspense>
+  );
+}
+
+function ProfilePageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const backTo = searchParams.get("from") || "/dashboard";
   const [user, setUser] = useState<User | null>(null);
   const [sessionCount, setSessionCount] = useState(0);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [baseUrl, setBaseUrl] = useState(DEFAULT_BASE_URL);
-  const [apiKey, setApiKey] = useState("");
-  const [model, setModel] = useState(DEFAULT_MODEL);
-  const [format, setFormat] = useState<LlmFormat>("anthropic");
+  const [saved, setSaved] = useState(() => getLlmSettings());
+  const [baseUrl, setBaseUrl] = useState(saved.baseUrl);
+  const [apiKey, setApiKey] = useState(saved.apiKey);
+  const [model, setModel] = useState(saved.model);
+  const [format, setFormat] = useState<LlmFormat>(saved.format);
   const [savedFlash, setSavedFlash] = useState(false);
   const [showKey, setShowKey] = useState(false);
-  const [saved, setSaved] = useState(getLlmSettings());
-
-  useEffect(() => {
-    const settings = getLlmSettings();
-    setBaseUrl(settings.baseUrl);
-    setApiKey(settings.apiKey);
-    setModel(settings.model);
-    setFormat(settings.format);
-    setSaved(settings);
-  }, []);
 
   const isDirty =
     baseUrl.trim() !== saved.baseUrl ||
@@ -164,11 +165,11 @@ export default function ProfilePage() {
           <>
             <button
               type="button"
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push(backTo)}
               className="session-back"
             >
               <ArrowLeft size={14} />
-              Back to dashboard
+              {backTo === "/dashboard" ? "Back to dashboard" : "Back to session"}
             </button>
 
             <div className="profile-layout">

@@ -43,6 +43,11 @@ export interface DbAdapter {
     description?: string
   ): Promise<Session>;
   deleteSession(userId: string, sessionId: string): Promise<boolean>;
+  renameSession(
+    userId: string,
+    sessionId: string,
+    title: string
+  ): Promise<Session | null>;
   listMessages(sessionId: string): Promise<Message[]>;
   createMessage(
     sessionId: string,

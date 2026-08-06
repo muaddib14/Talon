@@ -214,3 +214,20 @@ export const deleteSession: DbAdapter["deleteSession"] = async (
   if (error) throw new Error(error.message);
   return (count ?? 0) > 0;
 };
+
+export const renameSession: DbAdapter["renameSession"] = async (
+  userId: string,
+  sessionId: string,
+  title: string
+) => {
+  const supabase = getClient();
+  const { data, error } = await supabase
+    .from("sessions")
+    .update({ title, updated_at: new Date().toISOString() })
+    .eq("id", sessionId)
+    .eq("user_id", userId)
+    .select("*")
+    .single();
+  if (error) return null;
+  return toSession(data as SessionRow | null);
+};

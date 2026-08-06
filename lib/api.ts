@@ -62,6 +62,17 @@ export async function deleteSession(id: string) {
   });
 }
 
+export async function renameSession(id: string, title: string) {
+  const data = await apiRequest<{ session: SessionItem }>(
+    `/api/sessions/${id}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ title }),
+    }
+  );
+  return data.session;
+}
+
 export async function listMessages(sessionId: string) {
   const data = await apiRequest<{ messages: Message[] }>(
     `/api/sessions/${sessionId}/messages`

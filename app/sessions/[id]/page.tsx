@@ -4,16 +4,22 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import JSZip from "jszip";
 import {
-  ArrowLeft,
   Check,
   Download,
   File,
   Inbox,
   ListChecks,
   Menu,
-  Plus,
+  MoreHorizontal,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Pencil,
+  Search,
   Send,
+  Settings,
+  SquarePen,
   Trash2,
+  X,
 } from "lucide-react";
 import {
   createMessage,
@@ -22,18 +28,12 @@ import {
   getSession,
   listMessages,
   listSessions,
+  renameSession,
 } from "@/lib/api";
 import LoadingDots from "@/components/LoadingDots";
 import type { Message, Session } from "@/lib/db/types";
 import { buildMockReply, type MockFile } from "@/lib/mock-agent";
 import { hasLlmKey } from "@/lib/llm-settings";
-
-const STATUS_LABEL: Record<Session["status"], string> = {
-  idle: "Ready",
-  running: "Running",
-  paused: "Paused",
-  error: "Error",
-};
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, {
@@ -52,6 +52,11 @@ function formatTime(iso: string): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+interface WalletUser {
+  wallet_address: string;
+  username: string | null;
 }
 
 function parseFiles(metadata: Record<string, unknown> | null): MockFile[] {
@@ -80,8 +85,74 @@ export default function SessionPage() {
   const [typing, setTyping] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [deleteArmed, setDeleteArmed] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [user, setUser] = useState<WalletUser | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredSessions = searchQuery.trim()
+    ? sessions.filter((s) =>
+        s.title.toLowerCase().includes(searchQuery.trim().toLowerCase())
+      )
+    : sessions;
+
+  const closeSearch = () => {
+    setSearchOpen(false);
+    setSearchQuery("");
+  };
+
+  useEffect(() => {
+    setCollapsed(localStorage.getItem("talon_sidebar_collapsed") === "1");
+  }, []);
+
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem("talon_sidebar_collapsed", next ? "1" : "0");
+      return next;
+    });
+  };
+
+  const handleRenameStart = (s: Session) => {
+    setMenuOpenId(null);
+    setRenamingId(s.id);
+    setRenameValue(s.title);
+  };
+
+  const handleRenameSubmit = async (sessionId: string) => {
+    const title = renameValue.trim();
+    setRenamingId(null);
+    if (!title) return;
+    try {
+      const updated = await renameSession(sessionId, title);
+      setSessions((prev) =>
+        prev.map((s) => (s.id === sessionId ? updated : s))
+      );
+      if (session?.id === sessionId) {
+        setSession(updated);
+      }
+    } catch {
+      /* keep old title on failure */
+    }
+  };
+
+  const handleSidebarDelete = async (sessionId: string) => {
+    setMenuOpenId(null);
+    try {
+      await deleteSession(sessionId);
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+      if (sessionId === id) {
+        router.replace("/dashboard");
+      }
+    } catch {
+      /* no-op */
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("talon_token");
@@ -96,8 +167,12 @@ export default function SessionPage() {
       getSession(id).catch(() => null),
       listMessages(id).catch(() => []),
       listSessions().catch(() => []),
+      fetch("/api/auth/me", { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => data?.user ?? null)
+        .catch(() => null),
     ])
-      .then(([s, msgs, allSessions]) => {
+      .then(([s, msgs, allSessions, me]) => {
         if (cancelled) return;
         if (!s) {
           router.replace("/dashboard");
@@ -106,6 +181,7 @@ export default function SessionPage() {
         setSession(s);
         setMessages(msgs);
         setSessions(allSessions.filter((other) => other.id !== s.id));
+        setUser(me);
       })
       .catch(() => router.replace("/"))
       .finally(() => setLoading(false));
@@ -119,6 +195,13 @@ export default function SessionPage() {
     const el = scrollRef.current;
     if (el) el.scrollTo({ top: el.scrollHeight });
   }, [messages, typing]);
+
+  useEffect(() => {
+    if (!menuOpenId) return;
+    const close = () => setMenuOpenId(null);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, [menuOpenId]);
 
   const handleSend = async () => {
     const text = input.trim();
@@ -207,21 +290,70 @@ export default function SessionPage() {
         />
       )}
 
-      <aside className={`ws-sidebar${sidebarOpen ? " ws-sidebar--open" : ""}`}>
+      <aside
+        className={`ws-sidebar${sidebarOpen ? " ws-sidebar--open" : ""}${
+          collapsed ? " ws-sidebar--collapsed" : ""
+        }`}
+      >
         <div className="ws-sidebar-head">
-          <div className="logo">
-            Talon<span className="logo-dot">.</span>
-          </div>
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="ws-new-btn"
-            title="New session"
+            className="logo ws-logo-btn"
+            title="Back to dashboard"
           >
-            <Plus size={16} />
-            New
+            Talon<span className="logo-dot">.</span>
+          </button>
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            className="ws-collapse-btn"
+            title="Close sidebar"
+            aria-label="Close sidebar"
+          >
+            <PanelLeftClose size={16} />
           </button>
         </div>
+
+        <button
+          type="button"
+          onClick={() => router.push("/dashboard")}
+          className="ws-new-row"
+        >
+          <SquarePen size={17} />
+          New session
+        </button>
+
+        {searchOpen ? (
+          <div className="ws-search-row">
+            <Search size={16} />
+            <input
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Escape" && closeSearch()}
+              placeholder="Search sessions…"
+              className="ws-search-input"
+            />
+            <button
+              type="button"
+              onClick={closeSearch}
+              className="ws-search-close"
+              aria-label="Close search"
+            >
+              <X size={15} />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            className="ws-new-row"
+          >
+            <Search size={17} />
+            Search sessions
+          </button>
+        )}
 
         <nav className="ws-nav">
           {loading ? (
@@ -234,37 +366,123 @@ export default function SessionPage() {
               <p>No other sessions yet</p>
               <span>New builds will show up here</span>
             </div>
+          ) : filteredSessions.length === 0 ? (
+            <div className="ws-nav-empty">
+              <Search size={20} strokeWidth={1.5} />
+              <p>No matches</p>
+              <span>Try a different search</span>
+            </div>
           ) : (
-            sessions.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => router.push(`/sessions/${s.id}`)}
-                className={`ws-nav-item${
-                  s.id === id ? " ws-nav-item--active" : ""
-                }`}
-                title={s.title}
-              >
-                <span className="ws-nav-title">{s.title}</span>
-                <span className={`ws-nav-dot ws-nav-dot--${s.status}`} />
-                <span className="ws-nav-date">{formatDate(s.updated_at)}</span>
-              </button>
+            filteredSessions.map((s) => (
+              <div key={s.id} className="ws-nav-row">
+                {renamingId === s.id ? (
+                  <input
+                    autoFocus
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    onBlur={() => handleRenameSubmit(s.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleRenameSubmit(s.id);
+                      if (e.key === "Escape") setRenamingId(null);
+                    }}
+                    className="ws-nav-rename-input"
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/sessions/${s.id}`)}
+                    className={`ws-nav-item${
+                      s.id === id ? " ws-nav-item--active" : ""
+                    }`}
+                    title={s.title}
+                  >
+                    <span className="ws-nav-title">{s.title}</span>
+                    <span className="ws-nav-date">
+                      {formatDate(s.updated_at)}
+                    </span>
+                  </button>
+                )}
+
+                <div className="ws-nav-menu">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMenuOpenId((prev) => (prev === s.id ? null : s.id));
+                    }}
+                    className="ws-nav-menu-btn"
+                    aria-label="Session options"
+                  >
+                    <MoreHorizontal size={15} />
+                  </button>
+
+                  {menuOpenId === s.id && (
+                    <div
+                      className="ws-nav-dropdown"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleRenameStart(s)}
+                      >
+                        <Pencil size={13} />
+                        Rename
+                      </button>
+                      <button
+                        type="button"
+                        className="ws-nav-dropdown-danger"
+                        onClick={() => handleSidebarDelete(s.id)}
+                      >
+                        <Trash2 size={13} />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             ))
           )}
         </nav>
 
-        <button
-          type="button"
-          onClick={() => router.push("/dashboard")}
-          className="ws-sidebar-back"
-        >
-          <ArrowLeft size={14} />
-          Back to dashboard
-        </button>
+        {user && (
+          <button
+            type="button"
+            onClick={() =>
+              router.push(`/profile?from=${encodeURIComponent(`/sessions/${id}`)}`)
+            }
+            className="ws-profile-row"
+            title="Profile & settings"
+          >
+            <span className="ws-profile-avatar">
+              {user.wallet_address.slice(0, 2).toUpperCase()}
+            </span>
+            <span className="ws-profile-info">
+              <span className="ws-profile-name">
+                {user.username ?? "Talon user"}
+              </span>
+              <span className="ws-profile-wallet">
+                {user.wallet_address.slice(0, 4)}…
+                {user.wallet_address.slice(-4)}
+              </span>
+            </span>
+            <Settings size={16} className="ws-profile-gear" />
+          </button>
+        )}
       </aside>
 
       <div className="ws-main">
         <header className="ws-head">
+          {collapsed && (
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              className="ws-expand-btn"
+              title="Open sidebar"
+              aria-label="Open sidebar"
+            >
+              <PanelLeftOpen size={17} />
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
@@ -285,14 +503,6 @@ export default function SessionPage() {
               )}
             </span>
             <span className="ws-head-sub">
-              {session ? (
-                <span
-                  className={`session-status session-status--${session.status}`}
-                >
-                  <span className="session-status-dot" aria-hidden="true" />
-                  {STATUS_LABEL[session.status]}
-                </span>
-              ) : null}
               {session ? (
                 <span className="ws-head-id">#{session.id.slice(0, 8)}</span>
               ) : null}

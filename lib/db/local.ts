@@ -136,3 +136,20 @@ export const deleteSession: DbAdapter["deleteSession"] = async (
   writeDB(db);
   return true;
 };
+
+export const renameSession: DbAdapter["renameSession"] = async (
+  userId: string,
+  sessionId: string,
+  title: string
+) => {
+  const db = readDB();
+  const session = db.sessions.find(
+    (s) => s.id === sessionId && s.user_id === userId
+  );
+  if (!session) return null;
+
+  session.title = title;
+  session.updated_at = new Date().toISOString();
+  writeDB(db);
+  return session;
+};
