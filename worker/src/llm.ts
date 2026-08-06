@@ -162,17 +162,27 @@ async function callOpenAi(
     choices: {
       message: {
         content: string | null;
-        tool_calls?: { id: string; function: { name: string; arguments: string } }[];
+        tool_calls?: {
+          id: string;
+          function?: { name?: string; arguments?: string };
+        }[];
       };
     }[];
   };
 
   const message = data.choices[0]?.message;
-  const toolCalls: ToolCall[] = (message?.tool_calls ?? []).map((tc) => ({
-    id: tc.id,
-    name: tc.function.name,
-    input: JSON.parse(tc.function.arguments || "{}"),
-  }));
+  const toolCalls: ToolCall[] = [];
+  for (const tc of message?.tool_calls ?? []) {
+    const name = tc.function?.name;
+    if (!name) continue; // some free/small models omit this — skip rather than crash
+    let input: Record<string, unknown> = {};
+    try {
+      input = JSON.parse(tc.function?.arguments || "{}");
+    } catch {
+      /* malformed JSON args from a weaker model — proceed with empty input */
+    }
+    toolCalls.push({ id: tc.id, name, input });
+  }
 
   return { text: message?.content ?? "", toolCalls };
 }
