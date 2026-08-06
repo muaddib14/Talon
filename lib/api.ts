@@ -117,3 +117,25 @@ export async function generateReply(sessionId: string, prompt: string) {
   );
   return data.message;
 }
+
+export async function executeInSandbox(sessionId: string, prompt: string) {
+  const { apiKey, baseUrl, model, format } = getLlmSettings();
+  if (!apiKey) {
+    throw new Error("Missing API key. Add one in Settings first.");
+  }
+
+  const data = await apiRequest<{ message: Message }>(
+    `/api/sessions/${sessionId}/execute`,
+    {
+      method: "POST",
+      headers: {
+        "x-llm-api-key": apiKey,
+        "x-llm-base-url": baseUrl,
+        "x-llm-model": model,
+        "x-llm-format": format,
+      },
+      body: JSON.stringify({ prompt }),
+    }
+  );
+  return data.message;
+}

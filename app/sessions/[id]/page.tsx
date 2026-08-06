@@ -18,12 +18,14 @@ import {
   Send,
   Settings,
   SquarePen,
+  Terminal,
   Trash2,
   X,
 } from "lucide-react";
 import {
   createMessage,
   deleteSession,
+  executeInSandbox,
   generateReply,
   getSession,
   listMessages,
@@ -94,6 +96,7 @@ export default function SessionPage() {
   const [user, setUser] = useState<WalletUser | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sandboxMode, setSandboxMode] = useState(false);
 
   const filteredSessions = searchQuery.trim()
     ? sessions.filter((s) =>
@@ -216,16 +219,18 @@ export default function SessionPage() {
       setMessages((prev) => [...prev, userMsg]);
       setTyping(true);
 
-      const agentMsg = hasLlmKey()
-        ? await generateReply(session.id, text)
-        : await (async () => {
+      const agentMsg = !hasLlmKey()
+        ? await (async () => {
             await new Promise((r) => setTimeout(r, 900));
             const reply = buildMockReply(text, session.title);
             return createMessage(session.id, "assistant", reply.text, {
               plan: reply.plan,
               files: reply.files,
             });
-          })();
+          })()
+        : sandboxMode
+          ? await executeInSandbox(session.id, text)
+          : await generateReply(session.id, text);
 
       setTyping(false);
       setMessages((prev) => [...prev, agentMsg]);
@@ -633,6 +638,21 @@ export default function SessionPage() {
 
         <div className="ws-composer">
           <div className="ws-composer-inner">
+            <button
+              type="button"
+              onClick={() => setSandboxMode((v) => !v)}
+              className={`ws-sandbox-toggle${
+                sandboxMode ? " ws-sandbox-toggle--on" : ""
+              }`}
+              title={
+                sandboxMode
+                  ? "Sandbox mode: real execution via e2b"
+                  : "Text-only mode: generates code without running it"
+              }
+            >
+              <Terminal size={13} />
+              Sandbox
+            </button>
             <textarea
               ref={inputRef}
               value={input}
