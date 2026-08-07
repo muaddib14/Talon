@@ -8,7 +8,7 @@ import GetStartedButton from "./GetStartedButton";
 import { EASE } from "./motion";
 
 const LINE1 = ["AI", "Coding", "Agent."];
-const LINE2 = "Powered by your wallet.";
+const LINE2 = "One key. All AI models.";
 
 export default function Hero() {
   const sec = useRef<HTMLElement>(null);

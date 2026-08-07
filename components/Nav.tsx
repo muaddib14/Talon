@@ -32,8 +32,9 @@ export default function Nav() {
       transition={{ duration: 0.8, ease: EASE }}
     >
       <div className="nav-inner">
-        <a href="#" className="logo" aria-label="Frank">
+        <a href="#" className="logo" aria-label="Frank Agent">
           <Logo height={26} />
+          <span className="logo-text">Frank Agent</span>
         </a>
         <ul className="nav-links">
           {LINKS.map((l) => (
