@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { authUser } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 
-const SYSTEM_PROMPT = `You are Talon, an AI coding agent. A user describes an app or a change.
+const SYSTEM_PROMPT = `You are Frank, an AI coding agent. A user describes an app or a change.
 Respond with a single JSON object only — no markdown fences, no prose outside the JSON.
 
 Shape:

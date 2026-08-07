@@ -7,7 +7,7 @@ export async function apiRequest<T = unknown>(
 ): Promise<T> {
   const token =
     typeof localStorage !== "undefined"
-      ? localStorage.getItem("talon_token")
+      ? localStorage.getItem("frank_token")
       : null;
 
   const headers: Record<string, string> = {
@@ -23,8 +23,8 @@ export async function apiRequest<T = unknown>(
   const res = await fetch(url, { ...options, headers });
 
   if (res.status === 401) {
-    localStorage.removeItem("talon_token");
-    document.cookie = "talon_token=; path=/; max-age=0";
+    localStorage.removeItem("frank_token");
+    document.cookie = "frank_token=; path=/; max-age=0";
     throw new Error("Unauthorized");
   }
 

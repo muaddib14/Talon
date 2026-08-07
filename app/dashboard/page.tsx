@@ -50,7 +50,7 @@ export default function DashboardPage() {
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("talon_token");
+    const token = localStorage.getItem("frank_token");
     if (!token) {
       router.replace("/");
       return;
@@ -61,7 +61,7 @@ export default function DashboardPage() {
     })
       .then(async (meRes) => {
         if (meRes.status === 401) {
-          localStorage.removeItem("talon_token");
+          localStorage.removeItem("frank_token");
           router.replace("/");
           return;
         }
@@ -146,13 +146,13 @@ export default function DashboardPage() {
             <div className="session-hero">
               <span className="session-hero-chip">
                 <Sparkles size={12} />
-                Talon agent
+                Frank agent
               </span>
               <h1 className="session-hero-title">
                 What are we building today?
               </h1>
               <p className="session-hero-sub">
-                Describe the app. Talon will plan it, write the code, and run
+                Describe the app. Frank will plan it, write the code, and run
                 it in a live sandbox.
               </p>
 

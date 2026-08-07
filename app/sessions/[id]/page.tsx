@@ -108,13 +108,13 @@ export default function SessionPage() {
   };
 
   useEffect(() => {
-    setCollapsed(localStorage.getItem("talon_sidebar_collapsed") === "1");
+    setCollapsed(localStorage.getItem("frank_sidebar_collapsed") === "1");
   }, []);
 
   const toggleCollapsed = () => {
     setCollapsed((prev) => {
       const next = !prev;
-      localStorage.setItem("talon_sidebar_collapsed", next ? "1" : "0");
+      localStorage.setItem("frank_sidebar_collapsed", next ? "1" : "0");
       return next;
     });
   };
@@ -156,7 +156,7 @@ export default function SessionPage() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("talon_token");
+    const token = localStorage.getItem("frank_token");
     if (!token || !id) {
       router.replace("/");
       return;
@@ -277,7 +277,7 @@ export default function SessionPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `talon-${session?.id.slice(0, 8) ?? "project"}.zip`;
+    link.download = `frank-${session?.id.slice(0, 8) ?? "project"}.zip`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -459,7 +459,7 @@ export default function SessionPage() {
             </span>
             <span className="ws-profile-info">
               <span className="ws-profile-name">
-                {user.username ?? "Talon user"}
+                {user.username ?? "Frank user"}
               </span>
               <span className="ws-profile-wallet">
                 {user.wallet_address.slice(0, 4)}…
@@ -542,7 +542,7 @@ export default function SessionPage() {
                 {session?.title ?? "Untitled"}
               </p>
               <p className="ws-chat-empty-text">
-                Describe what you want to build below. Talon replies with a
+                Describe what you want to build below. Frank replies with a
                 plan and a downloadable HTML/CSS/JS project — no sandbox, no
                 preview, just the source ZIP.
               </p>
@@ -564,7 +564,7 @@ export default function SessionPage() {
                     <div className="ws-agent-avatar">T</div>
                     <div className="ws-agent-body">
                       <div className="ws-agent-meta">
-                        <span className="ws-agent-name">Talon</span>
+                        <span className="ws-agent-name">Frank</span>
                         <span className="ws-agent-time">
                           {formatTime(m.created_at)}
                         </span>
@@ -618,7 +618,7 @@ export default function SessionPage() {
                   <div className="ws-agent-avatar">T</div>
                   <div className="ws-agent-body">
                     <div className="ws-agent-meta">
-                      <span className="ws-agent-name">Talon</span>
+                      <span className="ws-agent-name">Frank</span>
                     </div>
                     <div className="ws-typing">
                       <span />
@@ -643,7 +643,7 @@ export default function SessionPage() {
                 e.target.style.height = `${Math.min(e.target.scrollHeight, 128)}px`;
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Ask Talon for a change or a new build…"
+              placeholder="Ask Frank for a change or a new build…"
               className="ws-composer-input"
               rows={1}
             />

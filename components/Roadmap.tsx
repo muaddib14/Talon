@@ -8,7 +8,7 @@ const MILESTONES = [
   {
     num: "01",
     title: "Launch",
-    text: "Talon goes live. Wallet auth, BYOK chat, and real sandbox execution—free from day one.",
+    text: "Frank goes live. Wallet auth, BYOK chat, and real sandbox execution—free from day one.",
   },
   {
     num: "02",
@@ -23,7 +23,7 @@ const MILESTONES = [
   {
     num: "04",
     title: "Full ecosystem",
-    text: "Team sessions, live preview, and a marketplace of skills. Talon becomes the default agent for builders.",
+    text: "Team sessions, live preview, and a marketplace of skills. Frank becomes the default agent for builders.",
   },
 ];
 
@@ -34,7 +34,7 @@ export default function Roadmap() {
         <Reveal>
           <div className="section-head">
             <p className="label">Roadmap</p>
-            <h2 className="section-title">Where Talon is headed.</h2>
+            <h2 className="section-title">Where Frank is headed.</h2>
             <p className="section-sub">
               From launch to the full ecosystem—here&apos;s what&apos;s next.
             </p>

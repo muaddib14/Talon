@@ -16,7 +16,7 @@ const FAQS = [
   },
   {
     q: "Does this replace developers?",
-    a: "No—it's a force multiplier. Talon handles the repetitive work: scaffolding, boilerplate, and glue code. You review, you decide, you stay in control of everything.",
+    a: "No—it's a force multiplier. Frank handles the repetitive work: scaffolding, boilerplate, and glue code. You review, you decide, you stay in control of everything.",
   },
 ];
 
@@ -67,7 +67,7 @@ export default function Faq() {
               <h2 className="faq-title">Questions, answered.</h2>
               <p className="faq-intro">
                 Everything you need to know before you start building with
-                Talon.
+                Frank.
               </p>
             </Reveal>
 
@@ -81,8 +81,8 @@ export default function Faq() {
                   <p className="faq-support-text">
                     Reach out—we usually reply within a day.
                   </p>
-                  <a className="faq-support-link" href="mailto:hello@talon.xyz">
-                    hello@talon.xyz
+                  <a className="faq-support-link" href="mailto:hello@frank.xyz">
+                    hello@frank.xyz
                     <ArrowUpRight />
                   </a>
                 </div>

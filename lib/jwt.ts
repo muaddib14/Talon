@@ -6,7 +6,7 @@ export interface AuthPayload {
 }
 
 const JWT_SECRET =
-  process.env.JWT_SECRET ?? "talon-dev-secret-change-me-in-production";
+  process.env.JWT_SECRET ?? "frank-dev-secret-change-me-in-production";
 const TOKEN_TTL = "7d";
 
 export function signToken(payload: AuthPayload): string {

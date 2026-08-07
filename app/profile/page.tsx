@@ -97,7 +97,7 @@ function ProfilePageContent() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("talon_token");
+    const token = localStorage.getItem("frank_token");
     if (!token) {
       router.replace("/");
       return;
@@ -108,7 +108,7 @@ function ProfilePageContent() {
     })
       .then(async (meRes) => {
         if (meRes.status === 401) {
-          localStorage.removeItem("talon_token");
+          localStorage.removeItem("frank_token");
           router.replace("/");
           return;
         }
@@ -179,7 +179,7 @@ function ProfilePageContent() {
                   {user.wallet_address.slice(0, 2).toUpperCase()}
                 </div>
                 <h1 className="profile-name">
-                  {user.username ?? "Talon user"}
+                  {user.username ?? "Frank user"}
                 </h1>
                 <p className="profile-note">
                   Wallet-linked account · no password needed

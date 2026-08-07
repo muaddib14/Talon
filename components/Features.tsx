@@ -144,7 +144,7 @@ function NodeDiagramIllustration() {
 const FEATURES = [
   {
     title: "Real Code Execution",
-    text: "Talon writes code and runs it in a secure sandbox. Live output, real results—and the finished project ready to download.",
+    text: "Frank writes code and runs it in a secure sandbox. Live output, real results—and the finished project ready to download.",
     illustration: GaugeIllustration,
   },
   {

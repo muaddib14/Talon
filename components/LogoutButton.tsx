@@ -8,8 +8,8 @@ export default function LogoutButton() {
   const { disconnect } = useWallet();
 
   const handleLogout = async () => {
-    localStorage.removeItem("talon_token");
-    document.cookie = "talon_token=; path=/; max-age=0";
+    localStorage.removeItem("frank_token");
+    document.cookie = "frank_token=; path=/; max-age=0";
     await disconnect();
     router.push("/");
   };

@@ -17,7 +17,7 @@ export interface LoginResult {
   error?: string;
 }
 
-export function useTalonAuth() {
+export function useFrankAuth() {
   const router = useRouter();
   const { publicKey, signMessage } = useWallet();
   const { setVisible } = useWalletModal();
@@ -60,8 +60,8 @@ export function useTalonAuth() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "Login failed");
 
-      localStorage.setItem("talon_token", data.token);
-      document.cookie = `talon_token=${data.token}; path=/; max-age=604800; samesite=lax`;
+      localStorage.setItem("frank_token", data.token);
+      document.cookie = `frank_token=${data.token}; path=/; max-age=604800; samesite=lax`;
 
       pendingRef.current = false;
       attemptedKeyRef.current = null;

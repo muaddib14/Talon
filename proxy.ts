@@ -9,7 +9,7 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/profile")
   ) {
-    const token = request.cookies.get("talon_token")?.value;
+    const token = request.cookies.get("frank_token")?.value;
     if (!token || !verifyToken(token)) {
       return NextResponse.redirect(new URL("/", request.url));
     }

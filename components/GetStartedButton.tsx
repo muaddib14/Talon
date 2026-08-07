@@ -2,7 +2,7 @@
 
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useRef, type ReactNode } from "react";
-import { useTalonAuth } from "@/hooks/useTalonAuth";
+import { useFrankAuth } from "@/hooks/useFrankAuth";
 
 interface GetStartedButtonProps {
   className?: string;
@@ -15,7 +15,7 @@ export default function GetStartedButton({
   children = "Get Started",
   magnetic = false,
 }: GetStartedButtonProps) {
-  const { openWalletModal, isLoading } = useTalonAuth();
+  const { openWalletModal, isLoading } = useFrankAuth();
   const ref = useRef<HTMLButtonElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);

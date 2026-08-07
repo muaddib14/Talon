@@ -14,7 +14,7 @@ import {
 } from "@solana/web3.js";
 import nacl from "tweetnacl";
 
-const DEMO_KEY = "talon_demo_secret_key";
+const DEMO_KEY = "frank_demo_secret_key";
 
 function base64ToBytes(b64: string): Uint8Array {
   const binary = atob(b64);

@@ -12,7 +12,7 @@ export default function Logo({
   return (
     <Image
       src="/logo.png"
-      alt="Talon"
+      alt="Frank"
       width={1254}
       height={1254}
       className={className}

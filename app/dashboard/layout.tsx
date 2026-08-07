@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dashboard — Talon",
-  description: "Your Talon sessions.",
+  title: "Dashboard — Frank",
+  description: "Your Frank sessions.",
 };
 
 export default function DashboardLayout({

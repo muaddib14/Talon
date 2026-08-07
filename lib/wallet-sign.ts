@@ -5,7 +5,7 @@ const MESSAGE_MAX_AGE_MS = 5 * 60 * 1000;
 
 export function buildLoginMessage(walletAddress: string, now: number): Uint8Array {
   return new TextEncoder().encode(
-    `Login to Talon\nWallet: ${walletAddress}\nTimestamp: ${now}`
+    `Login to Frank\nWallet: ${walletAddress}\nTimestamp: ${now}`
   );
 }
 

@@ -4,7 +4,7 @@ import path from "path";
 import type { DbAdapter, Message, MessageRole, Session, User } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
-const DB_FILE = path.join(DATA_DIR, "talon-db.json");
+const DB_FILE = path.join(DATA_DIR, "frank-db.json");
 
 interface LocalDB {
   users: User[];

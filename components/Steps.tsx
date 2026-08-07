@@ -48,7 +48,7 @@ export default function Steps() {
             <div className="how-card-body">
               <h3 className="how-card-title">One key, every model</h3>
               <p className="how-card-text">
-                Grab a single Talon key and instantly unlock Claude, GPT,
+                Grab a single Frank key and instantly unlock Claude, GPT,
                 Gemini and more.
               </p>
             </div>
@@ -85,7 +85,7 @@ export default function Steps() {
                 <div className="how-browser-head">
                   <span className="how-browser-avatar">T</span>
                   <div>
-                    <span className="how-browser-name">Talon</span>
+                    <span className="how-browser-name">Frank</span>
                     <span className="how-browser-status">Online</span>
                   </div>
                 </div>
@@ -98,7 +98,7 @@ export default function Steps() {
             <div className="how-card-body">
               <h3 className="how-card-title">Chat right here</h3>
               <p className="how-card-text">
-                No setup needed. Talk to any model directly inside Talon.
+                No setup needed. Talk to any model directly inside Frank.
               </p>
             </div>
           </motion.div>
@@ -113,7 +113,7 @@ export default function Steps() {
                   </span>
                 ))}
                 <div className="how-pill-center">
-                  <span className="how-pill-center-title">One Talon Key</span>
+                  <span className="how-pill-center-title">One Frank Key</span>
                   <span className="how-pill-center-sub">
                     Unlocks every model
                   </span>

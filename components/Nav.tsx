@@ -32,7 +32,7 @@ export default function Nav() {
       transition={{ duration: 0.8, ease: EASE }}
     >
       <div className="nav-inner">
-        <a href="#" className="logo" aria-label="Talon">
+        <a href="#" className="logo" aria-label="Frank">
           <Logo height={26} />
         </a>
         <ul className="nav-links">

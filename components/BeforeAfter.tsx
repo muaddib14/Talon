@@ -13,7 +13,7 @@ export default function BeforeAfter() {
           <div className="section-head">
             <p className="label">Before / after</p>
             <h2 className="section-title">
-              From five accounts and five bills to one Talon key.
+              From five accounts and five bills to one Frank key.
             </h2>
           </div>
         </Reveal>
@@ -56,7 +56,7 @@ export default function BeforeAfter() {
             <div className="ba-after">
               <span className="ba-after-badge">Up to 90% cheaper</span>
               <div className="ba-after-card">
-                <span className="ba-after-logo">Talon</span>
+                <span className="ba-after-logo">Frank</span>
                 <p className="ba-after-title">One key. Every AI model.</p>
                 <p className="ba-after-sub">
                   Claude, GPT, Gemini, Llama &amp; more

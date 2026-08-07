@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* Talon x Auros — Next.js landing (framer-motion enhanced) */
+/* Frank x Auros — Next.js landing (framer-motion enhanced) */
 /* ============================================================
-   Talon — landing page
+   Frank — landing page
    Design system: Auros (abyssal terminal · bioluminescent orbs)
    Canvas #012624 · Kelp cards · Aurora gradient CTA (6px) · No shadows
    ============================================================ */
@@ -89,7 +89,7 @@ svg {
 
 /* aurora gradient label — signature eyebrow moment */
 .label--gradient {
-  background: linear-gradient(90deg, #cbfffc 0%, #edfffe 26.25%, #fffdfa 47.57%, #fad1ff 88.96%);
+  background: linear-gradient(90deg, #00827c 0%, #17a89f 50%, #0b1f1d 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -106,7 +106,8 @@ svg {
   left: 0;
   right: 0;
   z-index: 50;
-  border-bottom: 1px solid transparent;
+  background: #012624;
+  border-bottom: 1px solid rgba(112, 119, 119, 0.25);
   transition: background 0.3s ease, border-color 0.3s ease;
 }
 
@@ -290,6 +291,7 @@ svg {
   text-align: center;
   overflow: hidden;
   padding: 160px 24px 60px;
+  background: #ffffff;
 }
 
 /* bioluminescent data orb — brand-defining visual */
@@ -346,11 +348,12 @@ svg {
   position: relative;
   z-index: 2;
   max-width: 760px;
-  text-shadow: 0 2px 24px rgba(0, 20, 19, 0.85), 0 0 80px rgba(0, 20, 19, 0.55);
+  text-shadow: none;
 }
 
 .label-hero {
   margin-bottom: 28px;
+  color: #00827c;
 }
 
 .hero-word {
@@ -365,19 +368,19 @@ svg {
   font-size: clamp(44px, 8vw, 96px);
   line-height: 1;
   letter-spacing: -0.046em;
-  color: var(--color-platinum);
+  color: #0b1f1d;
   margin-bottom: 28px;
 }
 
 .hero-l2 {
   display: block;
-  color: var(--color-liquid-mist);
+  color: #00827c;
 }
 
 .hero-sub {
   max-width: 560px;
   margin: 0 auto 44px;
-  color: var(--color-silver-mist);
+  color: #4a5a58;
   font-size: 17px;
 }
 
@@ -3578,7 +3581,7 @@ html.lenis body {
 }
 
 /* ============================================================
-   Wallet adapter — Talon dark theme
+   Wallet adapter — Frank dark theme
    ============================================================ */
 .wallet-adapter-button {
   font-family: var(--font-matter);
@@ -3674,7 +3677,7 @@ html.lenis body {
 }
 
 /* ============================================================
-   Before / After — "5 accounts" vs "one Talon key"
+   Before / After — "5 accounts" vs "one Frank key"
    ============================================================ */
 .ba-panel {
   display: flex;

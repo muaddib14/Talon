@@ -48,5 +48,5 @@ app.post("/process", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Talon worker listening on port ${PORT}`);
+  console.log(`Frank worker listening on port ${PORT}`);
 });

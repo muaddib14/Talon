@@ -32,7 +32,7 @@ export default function Free() {
           <div className="section-head">
             <p className="label">Free forever</p>
             <h2 className="section-title">
-              Talon is free. Own everything you build.
+              Frank is free. Own everything you build.
             </h2>
             <p className="section-sub">
               No subscriptions, no metered plans. Bring your own Claude key

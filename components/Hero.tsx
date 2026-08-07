@@ -21,7 +21,7 @@ export default function Hero() {
 
   return (
     <section ref={sec} className="hero">
-      <PlanetCanvas />
+      <PlanetCanvas  />
       <div className="orb orb-accent" aria-hidden="true" />
 
       <motion.div className="hero-content" style={{ y: yText, opacity }}>
@@ -31,7 +31,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
         >
-          Talon
+          Frank
         </motion.p>
 
         <h1 className="hero-title">
@@ -70,7 +70,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9, ease: EASE }}
         >
-          Tell Talon what to build, and watch it write, run, and ship real
+          Tell Frank what to build, and watch it write, run, and ship real
           code—in an isolated sandbox you control. Download your project,
           keep your key. No subscriptions, ever.
         </motion.p>

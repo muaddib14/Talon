@@ -5,11 +5,11 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-inner">
         <div className="footer-brand">
-          <a href="#" className="logo" aria-label="Talon">
+          <a href="#" className="logo" aria-label="Frank">
             <Logo height={26} />
           </a>
           <p className="footer-copy">
-            (c) 2026 Talon. Open source. BYOK. All rights reserved.
+            (c) 2026 Frank. Open source. BYOK. All rights reserved.
           </p>
         </div>
         <div className="footer-col">

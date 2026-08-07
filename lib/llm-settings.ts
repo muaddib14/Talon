@@ -1,7 +1,7 @@
-const BASE_URL_KEY = "talon_llm_base_url";
-const API_KEY_KEY = "talon_llm_api_key";
-const MODEL_KEY = "talon_llm_model";
-const FORMAT_KEY = "talon_llm_format";
+const BASE_URL_KEY = "frank_llm_base_url";
+const API_KEY_KEY = "frank_llm_api_key";
+const MODEL_KEY = "frank_llm_model";
+const FORMAT_KEY = "frank_llm_format";
 
 export const DEFAULT_BASE_URL = "https://api.anthropic.com";
 export const DEFAULT_MODEL = "claude-sonnet-4-5-20250929";
