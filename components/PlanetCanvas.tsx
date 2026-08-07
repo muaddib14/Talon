@@ -1,6 +1,7 @@
 "use client";
 
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { useEffect, useRef } from "react";
 
 interface IRenderer {
@@ -11,92 +12,27 @@ interface IRenderer {
   setPixelRatio?(dpr: number): void;
 }
 
-const CORE_VERT = /* glsl */ `
-  varying vec3 vPos;
-  varying vec3 vNormal;
-  varying vec3 vView;
-  void main() {
-    vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    vPos = normalize(position);
-    vNormal = normalize(normalMatrix * normal);
-    vView = normalize(-mv.xyz);
-    gl_Position = projectionMatrix * mv;
-  }
-`;
-
-const CORE_FRAG = /* glsl */ `
-  uniform vec3 uCore;
-  uniform vec3 uLine;
-  varying vec3 vPos;
-  varying vec3 vNormal;
-  varying vec3 vView;
-  void main() {
-    float lat = asin(clamp(vPos.y, -1.0, 1.0)) / 3.14159265 + 0.5;
-    float lon = atan(vPos.z, vPos.x) / 6.2831853 + 0.5;
-    float m = abs(fract(lon * 36.0) - 0.5) * 2.0;
-    float p = abs(fract(lat * 24.0) - 0.5) * 2.0;
-    float grid = smoothstep(0.9, 1.0, min(m, p));
-    float lambert = max(dot(vNormal, normalize(vec3(0.45, 0.7, 1.0))), 0.12);
-    float fresnel = pow(1.0 - abs(dot(vNormal, vView)), 2.2);
-    vec3 col = mix(uCore, uLine, grid);
-    col += uLine * fresnel * 0.4;
-    col *= lambert;
-    gl_FragColor = vec4(col, 1.0);
-  }
-`;
-
-const GLOW_VERT = /* glsl */ `
-  varying vec3 vNormal;
-  varying vec3 vView;
-  void main() {
-    vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    vNormal = normalize(normalMatrix * normal);
-    vView = normalize(-mv.xyz);
-    gl_Position = projectionMatrix * mv;
-  }
-`;
-
-const GLOW_FRAG = /* glsl */ `
-  uniform vec3 uColor;
-  uniform float uPower;
-  varying vec3 vNormal;
-  varying vec3 vView;
-  void main() {
-    float f = pow(1.0 - abs(dot(vNormal, vView)), uPower);
-    gl_FragColor = vec4(uColor, f);
-  }
-`;
-
-function buildRing(THREE: typeof import("three")) {
-  const count = 900;
-  const pos = new Float32Array(count * 3);
-  const col = new Float32Array(count * 3);
-  const mint = new THREE.Color("#7fe8df");
-  const pale = new THREE.Color("#fad1ff");
-  const deep = new THREE.Color("#39c7bd");
-  for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const rad = 1.85 + Math.random() * 0.45;
-    pos[i * 3] = Math.cos(angle) * rad;
-    pos[i * 3 + 1] = (Math.random() - 0.5) * 0.1;
-    pos[i * 3 + 2] = Math.sin(angle) * rad;
-    const c = Math.random() < 0.08 ? pale : Math.random() < 0.5 ? mint : deep;
-    col[i * 3] = c.r;
-    col[i * 3 + 1] = c.g;
-    col[i * 3 + 2] = c.b;
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-  geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
-  const mat = new THREE.PointsMaterial({
-    size: 0.028,
-    vertexColors: true,
-    transparent: true,
-    opacity: 0.6,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
+function loadModel(src: string): Promise<THREE.Group> {
+  return new Promise((resolve, reject) => {
+    new GLTFLoader().load(
+      src,
+      (gltf) => resolve(gltf.scene),
+      undefined,
+      reject
+    );
   });
-  return new THREE.Points(geo, mat);
+}
+
+function frameModel(model: THREE.Group, targetRadius: number) {
+  const box = new THREE.Box3().setFromObject(model);
+  const size = new THREE.Vector3();
+  box.getSize(size);
+  const center = new THREE.Vector3();
+  box.getCenter(center);
+  const radius = Math.max(size.x, size.y, size.z) / 2 || 1;
+  const scale = targetRadius / radius;
+  model.scale.setScalar(scale);
+  model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
 }
 
 function createRenderer(canvas: HTMLCanvasElement): IRenderer {
@@ -128,8 +64,7 @@ export default function PlanetCanvas({
 
     let disposed = false;
     let renderer: IRenderer | null = null;
-    let planet: THREE.Mesh | null = null;
-    let ring: THREE.Points | null = null;
+    let modelRig: THREE.Group | null = null;
 
     const reduce =
       typeof window.matchMedia === "function" &&
@@ -158,6 +93,10 @@ export default function PlanetCanvas({
     };
 
     const init = async () => {
+      const model = await loadModel("/logo3d.glb");
+      if (disposed) return;
+      frameModel(model, 1.55);
+
       const W0 = canvas.parentElement?.clientWidth || window.innerWidth;
       const H0 = canvas.parentElement?.clientHeight || window.innerHeight;
 
@@ -165,56 +104,22 @@ export default function PlanetCanvas({
       const camera = new THREE.PerspectiveCamera(42, W0 / H0, 0.1, 60);
       camera.position.set(0, 0, 5.4);
 
+      scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1.1);
+      dirLight.position.set(1.2, 1.8, 2.6);
+      scene.add(dirLight);
+      const rimLight = new THREE.DirectionalLight(0x7fe8df, 0.6);
+      rimLight.position.set(-1.5, -0.5, -1.8);
+      scene.add(rimLight);
+
       const planetGroup = new THREE.Group();
       planetGroup.position.y = offsetYRef.current;
       planetGroup.scale.setScalar(sizeRef.current);
 
-      const coreMat = new THREE.ShaderMaterial({
-        vertexShader: CORE_VERT,
-        fragmentShader: CORE_FRAG,
-        uniforms: {
-          uCore: { value: new THREE.Color("#02201e") },
-          uLine: { value: new THREE.Color("#3fc4b8") },
-        },
-      });
-      planet = new THREE.Mesh(new THREE.SphereGeometry(1.55, 96, 96), coreMat);
+      modelRig = new THREE.Group();
+      modelRig.add(model);
 
-      const glowOuter = new THREE.Mesh(
-        new THREE.SphereGeometry(1.74, 64, 64),
-        new THREE.ShaderMaterial({
-          vertexShader: GLOW_VERT,
-          fragmentShader: GLOW_FRAG,
-          uniforms: {
-            uColor: { value: new THREE.Color("#39c7bd") },
-            uPower: { value: 2.8 },
-          },
-          blending: THREE.AdditiveBlending,
-          transparent: true,
-          depthWrite: false,
-          side: THREE.BackSide,
-        })
-      );
-
-      const glowInner = new THREE.Mesh(
-        new THREE.SphereGeometry(1.66, 64, 64),
-        new THREE.ShaderMaterial({
-          vertexShader: GLOW_VERT,
-          fragmentShader: GLOW_FRAG,
-          uniforms: {
-            uColor: { value: new THREE.Color("#cffdf8") },
-            uPower: { value: 4.5 },
-          },
-          blending: THREE.AdditiveBlending,
-          transparent: true,
-          depthWrite: false,
-          side: THREE.FrontSide,
-        })
-      );
-
-      ring = buildRing(THREE);
-      ring.rotation.x = -0.35;
-
-      planetGroup.add(planet, glowOuter, glowInner, ring);
+      planetGroup.add(modelRig);
       scene.add(planetGroup);
 
       renderer = createRenderer(canvas);
@@ -232,9 +137,8 @@ export default function PlanetCanvas({
         spin += dt * 0.16;
         curX += (targetX.v - curX) * Math.min(1, dt * 2.5);
         curY += (targetY.v - curY) * Math.min(1, dt * 2.5);
-        planet!.rotation.y = spin + curX * 0.35;
-        planet!.rotation.x = -curY * 0.22;
-        if (ring) ring.rotation.y = -spin * 0.45;
+        modelRig!.rotation.y = spin + curX * 0.35;
+        modelRig!.rotation.x = -curY * 0.22;
         if (renderer) renderer.render(scene, camera);
       };
 

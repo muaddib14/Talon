@@ -11,7 +11,7 @@ export default function Cta() {
       <div className="container">
         <Reveal>
           <div className="cta-panel">
-            <PlanetCanvas size={1.7} offsetY={-1.15} />
+            <PlanetCanvas size={0.90} offsetY={-1.0} />
             <span className="cta-skip-badge">
               <KeyRound size={14} />
               Skip the setup
