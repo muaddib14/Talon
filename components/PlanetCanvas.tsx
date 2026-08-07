@@ -137,8 +137,8 @@ export default function PlanetCanvas({
         spin += dt * 0.16;
         curX += (targetX.v - curX) * Math.min(1, dt * 2.5);
         curY += (targetY.v - curY) * Math.min(1, dt * 2.5);
-        modelRig!.rotation.y = spin + curX * 0.35;
-        modelRig!.rotation.x = -curY * 0.22;
+        modelRig!.rotation.y = 0.55 + spin + curX * 0.35;
+        modelRig!.rotation.x = -0.08 - curY * 0.22;
         if (renderer) renderer.render(scene, camera);
       };
 

@@ -21,19 +21,10 @@ export default function Hero() {
 
   return (
     <section ref={sec} className="hero">
-      <PlanetCanvas  />
       <div className="orb orb-accent" aria-hidden="true" />
 
+      <div className="hero-inner hero--split">
       <motion.div className="hero-content" style={{ y: yText, opacity }}>
-        <motion.p
-          className="label label-hero label--gradient"
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: EASE }}
-        >
-          Frank
-        </motion.p>
-
         <h1 className="hero-title">
           <motion.span
             className="inline-block"
@@ -93,6 +84,11 @@ export default function Hero() {
           </Link>
         </motion.div>
       </motion.div>
+
+      <div className="hero-model" aria-hidden="true">
+        <PlanetCanvas className="hero-model-canvas" size={1.1} offsetY={0} />
+      </div>
+      </div>
     </section>
   );
 }

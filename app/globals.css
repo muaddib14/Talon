@@ -294,6 +294,89 @@ svg {
   background: #ffffff;
 }
 
+.hero-inner {
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.hero--split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: 24px;
+  text-align: left;
+}
+
+.hero--split .hero-content {
+  margin: 0;
+}
+
+.hero--split .hero-sub {
+  margin: 0 0 44px;
+}
+
+.hero--split .hero-actions {
+  justify-content: flex-start;
+}
+
+.hero-actions .btn-aurora {
+  background: #00827c;
+  color: #ffffff;
+  border-color: #00827c;
+}
+
+.hero-actions .btn-aurora:hover {
+  background: #046f6a;
+  box-shadow: 0 12px 30px rgba(0, 130, 124, 0.3);
+}
+
+.hero-actions .btn-ghost {
+  color: #0b1f1d;
+  border-color: rgba(11, 31, 29, 0.35);
+}
+
+.hero-actions .btn-ghost:hover {
+  color: #00827c;
+  border-color: #00827c;
+}
+
+.hero-model {
+  position: relative;
+  height: 760px;
+  margin: -100px 0;
+}
+
+.hero-model-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .hero--split {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero--split .hero-sub {
+    margin: 0 auto 44px;
+  }
+
+  .hero--split .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-model {
+    height: 320px;
+    order: -1;
+  }
+}
+
 /* bioluminescent data orb — brand-defining visual */
 .orb {
   position: absolute;
@@ -351,8 +434,15 @@ svg {
   text-shadow: none;
 }
 
-.label-hero {
+.label-hero-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 28px;
+}
+
+.label-hero {
+  margin-bottom: 0;
   color: #00827c;
 }
 
