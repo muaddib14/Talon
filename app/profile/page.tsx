@@ -155,6 +155,7 @@ function ProfilePageContent() {
       <header className="dash-header">
         <div className="logo">
           <Logo height={26} />
+          <span className="logo-text">Frank Agent</span>
         </div>
         <LogoutButton />
       </header>

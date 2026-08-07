@@ -92,6 +92,34 @@ function parseCommands(metadata: Record<string, unknown> | null): CommandLog[] {
   );
 }
 
+interface TestResult {
+  passed: number;
+  failed: number;
+}
+
+function isTestCommand(command: string): boolean {
+  return /\b(test|jest|vitest|pytest|mocha)\b/i.test(command);
+}
+
+function parseTestResult(output: string): TestResult | null {
+  const jestVitest = output.match(/Tests:\s*(?:(\d+)\s*failed,\s*)?(\d+)\s*passed/i);
+  if (jestVitest) {
+    return {
+      passed: Number(jestVitest[2]),
+      failed: Number(jestVitest[1] ?? 0),
+    };
+  }
+  const mocha = output.match(/(\d+)\s*passing(?:[\s\S]*?(\d+)\s*failing)?/i);
+  if (mocha) {
+    return { passed: Number(mocha[1]), failed: Number(mocha[2] ?? 0) };
+  }
+  const pytest = output.match(/(\d+)\s*passed(?:,\s*(\d+)\s*failed)?/i);
+  if (pytest) {
+    return { passed: Number(pytest[1]), failed: Number(pytest[2] ?? 0) };
+  }
+  return null;
+}
+
 interface FileTreeRow {
   depth: number;
   name: string;
@@ -132,6 +160,7 @@ export default function SessionPage() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
+  const [demoModel, setDemoModel] = useState("Claude");
   const [sending, setSending] = useState(false);
   const [typing, setTyping] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -354,6 +383,7 @@ export default function SessionPage() {
             title="Back to dashboard"
           >
             <Logo height={26} />
+            {!collapsed && <span className="ws-logo-text">Frank Agent</span>}
           </button>
           <button
             type="button"
@@ -640,50 +670,69 @@ export default function SessionPage() {
                         <div className="ws-terminal">
                           <span className="ws-block-label">Terminal</span>
                           <div className="ws-terminal-body">
-                            {parseCommands(m.metadata).map((c, ci) => (
-                              <div key={ci} className="ws-terminal-run">
-                                <motion.div
-                                  className="ws-terminal-line ws-terminal-line--cmd"
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  transition={{ duration: 0.2, delay: ci * 0.15 }}
-                                >
-                                  <span className="ws-terminal-prompt">$</span>
-                                  {c.command}
-                                  <span
-                                    className={`ws-terminal-exit${
-                                      c.exitCode === 0 ? " ws-terminal-exit--ok" : " ws-terminal-exit--err"
-                                    }`}
+                            {parseCommands(m.metadata).map((c, ci) => {
+                              const testResult = isTestCommand(c.command)
+                                ? parseTestResult(c.stdout + "\n" + c.stderr)
+                                : null;
+                              return (
+                                <div key={ci} className="ws-terminal-run">
+                                  <motion.div
+                                    className="ws-terminal-line ws-terminal-line--cmd"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.2, delay: ci * 0.15 }}
                                   >
-                                    exit {c.exitCode}
-                                  </span>
-                                </motion.div>
-                                {c.stdout &&
-                                  c.stdout.split("\n").filter(Boolean).map((line, li) => (
-                                    <motion.div
-                                      key={`o-${li}`}
-                                      className="ws-terminal-line"
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      transition={{ duration: 0.15, delay: ci * 0.15 + 0.1 + li * 0.03 }}
+                                    <span className="ws-terminal-prompt">$</span>
+                                    {c.command}
+                                    <span
+                                      className={`ws-terminal-exit${
+                                        c.exitCode === 0 ? " ws-terminal-exit--ok" : " ws-terminal-exit--err"
+                                      }`}
                                     >
-                                      {line}
-                                    </motion.div>
-                                  ))}
-                                {c.stderr &&
-                                  c.stderr.split("\n").filter(Boolean).map((line, li) => (
+                                      exit {c.exitCode}
+                                    </span>
+                                  </motion.div>
+                                  {c.stdout &&
+                                    c.stdout.split("\n").filter(Boolean).map((line, li) => (
+                                      <motion.div
+                                        key={`o-${li}`}
+                                        className="ws-terminal-line"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.15, delay: ci * 0.15 + 0.1 + li * 0.03 }}
+                                      >
+                                        {line}
+                                      </motion.div>
+                                    ))}
+                                  {c.stderr &&
+                                    c.stderr.split("\n").filter(Boolean).map((line, li) => (
+                                      <motion.div
+                                        key={`e-${li}`}
+                                        className="ws-terminal-line ws-terminal-line--err"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.15, delay: ci * 0.15 + 0.1 + li * 0.03 }}
+                                      >
+                                        {line}
+                                      </motion.div>
+                                    ))}
+                                  {testResult && (
                                     <motion.div
-                                      key={`e-${li}`}
-                                      className="ws-terminal-line ws-terminal-line--err"
-                                      initial={{ opacity: 0 }}
-                                      animate={{ opacity: 1 }}
-                                      transition={{ duration: 0.15, delay: ci * 0.15 + 0.1 + li * 0.03 }}
+                                      className={`ws-test-badge${
+                                        testResult.failed > 0 ? " ws-test-badge--fail" : " ws-test-badge--pass"
+                                      }`}
+                                      initial={{ opacity: 0, scale: 0.9 }}
+                                      animate={{ opacity: 1, scale: 1 }}
+                                      transition={{ duration: 0.3, delay: ci * 0.15 + 0.3, type: "spring", stiffness: 300, damping: 20 }}
                                     >
-                                      {line}
+                                      {testResult.failed > 0
+                                        ? `✗ ${testResult.failed} failed, ${testResult.passed} passed`
+                                        : `✓ ${testResult.passed} passed`}
                                     </motion.div>
-                                  ))}
-                              </div>
-                            ))}
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       )}
@@ -751,6 +800,18 @@ export default function SessionPage() {
         </div>
 
         <div className="ws-composer">
+          <div className="ws-model-picker">
+            {["Claude", "GPT", "Gemini"].map((m) => (
+              <button
+                key={m}
+                type="button"
+                className={`ws-model-chip${demoModel === m ? " is-active" : ""}`}
+                onClick={() => setDemoModel(m)}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
           <div className="ws-composer-inner">
             <textarea
               ref={inputRef}

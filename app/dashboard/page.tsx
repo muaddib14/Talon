@@ -123,6 +123,7 @@ export default function DashboardPage() {
       <header className="dash-header">
         <div className="logo">
           <Logo height={26} />
+          <span className="logo-text">Frank Agent</span>
         </div>
         <div className="dash-header-actions">
           <button

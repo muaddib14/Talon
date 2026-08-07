@@ -2092,14 +2092,17 @@ html.lenis body {
   position: relative;
   z-index: 1;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 48px;
+  gap: 28px 36px;
 }
 
 .profile-stat {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+  min-width: 88px;
 }
 
 .profile-stat-num {
@@ -2108,6 +2111,8 @@ html.lenis body {
   font-size: 22px;
   letter-spacing: -0.02em;
   color: var(--color-platinum);
+  text-align: center;
+  white-space: nowrap;
 }
 
 .profile-stat-label {
@@ -2116,6 +2121,8 @@ html.lenis body {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-slate-deep);
+  text-align: center;
+  line-height: 1.4;
 }
 
 /* BYOK settings */
@@ -3088,6 +3095,9 @@ html.lenis body {
 }
 
 .ws-logo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   border: none;
   background: none;
   cursor: pointer;
@@ -3097,6 +3107,14 @@ html.lenis body {
 
 .ws-logo-btn:hover {
   opacity: 0.75;
+}
+
+.ws-logo-text {
+  font-family: var(--font-matter);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-platinum);
+  white-space: nowrap;
 }
 
 .ws-profile-row {
@@ -3513,6 +3531,28 @@ html.lenis body {
   color: #ff8a8a;
 }
 
+.ws-test-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-family: var(--font-matter);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ws-test-badge--pass {
+  color: #7fe8df;
+  background: rgba(0, 130, 124, 0.25);
+}
+
+.ws-test-badge--fail {
+  color: #ff8a8a;
+  background: rgba(255, 90, 90, 0.18);
+}
+
 .ws-artifact-files {
   display: flex;
   flex-direction: column;
@@ -3609,10 +3649,43 @@ html.lenis body {
 
 .ws-composer {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   padding: 16px 24px 20px;
   border-top: 1px solid rgba(112, 119, 119, 0.2);
   background: rgba(1, 29, 28, 0.6);
+}
+
+.ws-model-picker {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.ws-model-chip {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(112, 119, 119, 0.35);
+  background: transparent;
+  color: var(--color-slate-deep);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ws-model-chip:hover {
+  color: var(--color-silver-mist);
+  border-color: rgba(112, 119, 119, 0.5);
+}
+
+.ws-model-chip.is-active {
+  color: #062421;
+  background: #7fe8df;
+  border-color: #7fe8df;
 }
 
 .ws-composer-inner {
