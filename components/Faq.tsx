@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowUpRight, CircleHelp } from "lucide-react";
 import { useState } from "react";
 import { EASE, Reveal, staggerContainer, staggerItem } from "./motion";
 
@@ -69,24 +68,6 @@ export default function Faq() {
                 Everything you need to know before you start building with
                 Frank.
               </p>
-            </Reveal>
-
-            <Reveal delay={0.12}>
-              <div className="faq-support">
-                <span className="faq-support-icon">
-                  <CircleHelp />
-                </span>
-                <div>
-                  <h3 className="faq-support-title">Still curious?</h3>
-                  <p className="faq-support-text">
-                    Reach out—we usually reply within a day.
-                  </p>
-                  <a className="faq-support-link" href="mailto:hello@frank.xyz">
-                    hello@frank.xyz
-                    <ArrowUpRight />
-                  </a>
-                </div>
-              </div>
             </Reveal>
           </div>
 
