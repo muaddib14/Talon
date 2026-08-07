@@ -23,7 +23,6 @@ export default function Hero() {
     <section ref={sec} className="hero">
       <PlanetCanvas />
       <div className="orb orb-accent" aria-hidden="true" />
-      <div className="grid-lines" aria-hidden="true" />
 
       <motion.div className="hero-content" style={{ y: yText, opacity }}>
         <motion.p

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, DownloadCloud, Infinity as InfinityIcon, KeyRound } from "lucide-react";
 import { Reveal, staggerContainer, staggerItem } from "./motion";
@@ -48,11 +49,22 @@ export default function Free() {
           viewport={{ once: true, margin: "-60px" }}
         >
           <motion.div className="free-billboard-top" variants={staggerItem}>
-            <p className="free-hero-num">$0</p>
-            <p className="free-hero-note">
-              The only number that matters. Pay for the tokens you use—and
-              nothing else, ever.
-            </p>
+            <div className="free-billboard-copy">
+              <p className="free-hero-num">$0</p>
+              <p className="free-hero-note">
+                The only number that matters. Pay for the tokens you use—and
+                nothing else, ever.
+              </p>
+            </div>
+            <div className="free-billboard-media">
+              <Image
+                src="/illustrations/open-box-models.webp"
+                alt=""
+                width={1254}
+                height={1254}
+                sizes="220px"
+              />
+            </div>
           </motion.div>
 
           <div className="free-divider" />

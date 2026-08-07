@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import LogoutButton from "@/components/LogoutButton";
 import ProfileSkeleton from "@/components/ProfileSkeleton";
+import Logo from "@/components/Logo";
 import { listSessions } from "@/lib/api";
 import {
   DEFAULT_BASE_URL,
@@ -153,7 +154,7 @@ function ProfilePageContent() {
     <div className="dash">
       <header className="dash-header">
         <div className="logo">
-          Talon<span className="logo-dot">.</span>
+          <Logo height={26} />
         </div>
         <LogoutButton />
       </header>

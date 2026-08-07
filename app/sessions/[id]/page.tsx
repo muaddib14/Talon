@@ -31,6 +31,7 @@ import {
   renameSession,
 } from "@/lib/api";
 import LoadingDots from "@/components/LoadingDots";
+import Logo from "@/components/Logo";
 import type { Message, Session } from "@/lib/db/types";
 import { buildMockReply, type MockFile } from "@/lib/mock-agent";
 import { hasLlmKey } from "@/lib/llm-settings";
@@ -299,10 +300,10 @@ export default function SessionPage() {
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="logo ws-logo-btn"
+            className="ws-logo-btn"
             title="Back to dashboard"
           >
-            Talon<span className="logo-dot">.</span>
+            <Logo height={26} />
           </button>
           <button
             type="button"

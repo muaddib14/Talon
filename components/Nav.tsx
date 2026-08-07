@@ -4,10 +4,12 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { EASE } from "./motion";
 import GetStartedButton from "./GetStartedButton";
+import Logo from "./Logo";
 
 const LINKS = [
   { href: "#features", label: "Features" },
   { href: "#how", label: "How it works" },
+  { href: "#roadmap", label: "Roadmap" },
   { href: "#free", label: "Free" },
   { href: "#faq", label: "FAQ" },
 ];
@@ -30,8 +32,8 @@ export default function Nav() {
       transition={{ duration: 0.8, ease: EASE }}
     >
       <div className="nav-inner">
-        <a href="#" className="logo">
-          Talon<span className="logo-dot">.</span>
+        <a href="#" className="logo" aria-label="Talon">
+          <Logo height={26} />
         </a>
         <ul className="nav-links">
           {LINKS.map((l) => (

@@ -1,5 +1,6 @@
 "use client";
 
+import { KeyRound } from "lucide-react";
 import { Reveal } from "./motion";
 import PlanetCanvas from "./PlanetCanvas";
 import GetStartedButton from "./GetStartedButton";
@@ -11,6 +12,10 @@ export default function Cta() {
         <Reveal>
           <div className="cta-panel">
             <PlanetCanvas size={1.7} offsetY={-1.15} />
+            <span className="cta-skip-badge">
+              <KeyRound size={14} />
+              Skip the setup
+            </span>
             <span className="cta-chip">
               <span className="cta-chip-dot" aria-hidden="true" />
               No subscription · BYOK · Free forever

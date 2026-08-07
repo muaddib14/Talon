@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Sparkles, Trash2 } from "lucide-react";
 import LogoutButton from "@/components/LogoutButton";
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import Logo from "@/components/Logo";
 import { createSession, listSessions, deleteSession } from "@/lib/api";
 import type { Session } from "@/lib/db/types";
 
@@ -121,7 +122,7 @@ export default function DashboardPage() {
     <div className="dash">
       <header className="dash-header">
         <div className="logo">
-          Talon<span className="logo-dot">.</span>
+          <Logo height={26} />
         </div>
         <div className="dash-header-actions">
           <button

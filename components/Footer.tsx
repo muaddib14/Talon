@@ -1,13 +1,15 @@
+import Logo from "./Logo";
+
 export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-inner">
         <div className="footer-brand">
-          <a href="#" className="logo">
-            Talon<span className="logo-dot">.</span>
+          <a href="#" className="logo" aria-label="Talon">
+            <Logo height={26} />
           </a>
           <p className="footer-copy">
-            (c) 2024 Talon. Open source. BYOK. All rights reserved.
+            (c) 2026 Talon. Open source. BYOK. All rights reserved.
           </p>
         </div>
         <div className="footer-col">
