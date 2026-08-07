@@ -3455,6 +3455,64 @@ html.lenis body {
   background: rgba(2, 30, 28, 0.6);
 }
 
+.ws-terminal {
+  margin-bottom: 14px;
+}
+
+.ws-terminal-body {
+  background: #010c0b;
+  border: 1px solid rgba(112, 119, 119, 0.25);
+  border-radius: var(--radius-small);
+  padding: 14px 16px;
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.ws-terminal-run + .ws-terminal-run {
+  margin-top: 10px;
+}
+
+.ws-terminal-line {
+  color: var(--color-silver-mist);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ws-terminal-line--cmd {
+  color: var(--color-platinum);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ws-terminal-prompt {
+  color: #39c7bd;
+}
+
+.ws-terminal-exit {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.ws-terminal-exit--ok {
+  color: #7fe8df;
+  background: rgba(0, 130, 124, 0.2);
+}
+
+.ws-terminal-exit--err {
+  color: #ff8a8a;
+  background: rgba(255, 90, 90, 0.15);
+}
+
+.ws-terminal-line--err {
+  color: #ff8a8a;
+}
+
 .ws-artifact-files {
   display: flex;
   flex-direction: column;
@@ -3473,6 +3531,21 @@ html.lenis body {
 
 .ws-file svg {
   color: var(--color-lavender-phosphor);
+}
+
+.ws-file--dir {
+  background: transparent;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.ws-file--dir .ws-file-path {
+  font-weight: 500;
+  color: var(--color-silver-mist);
+}
+
+.ws-file--dir svg {
+  color: var(--color-slate-deep);
 }
 
 .ws-file-path {

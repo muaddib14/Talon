@@ -2,11 +2,13 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import JSZip from "jszip";
 import {
   Check,
   Download,
   File,
+  Folder,
   Inbox,
   ListChecks,
   Menu,
@@ -70,6 +72,54 @@ function parseFiles(metadata: Record<string, unknown> | null): MockFile[] {
       typeof (f as MockFile).path === "string" &&
       typeof (f as MockFile).content === "string"
   );
+}
+
+interface CommandLog {
+  command: string;
+  stdout: string;
+  stderr: string;
+  exitCode: number;
+}
+
+function parseCommands(metadata: Record<string, unknown> | null): CommandLog[] {
+  const commands = metadata?.commands;
+  if (!Array.isArray(commands)) return [];
+  return commands.filter(
+    (c): c is CommandLog =>
+      typeof c === "object" &&
+      c !== null &&
+      typeof (c as CommandLog).command === "string"
+  );
+}
+
+interface FileTreeRow {
+  depth: number;
+  name: string;
+  isDir: boolean;
+  size?: number;
+}
+
+function buildFileTreeRows(files: MockFile[]): FileTreeRow[] {
+  const rows: FileTreeRow[] = [];
+  const seenDirs = new Set<string>();
+
+  for (const f of files) {
+    const parts = f.path.split("/");
+    for (let i = 0; i < parts.length - 1; i++) {
+      const dirPath = parts.slice(0, i + 1).join("/");
+      if (!seenDirs.has(dirPath)) {
+        seenDirs.add(dirPath);
+        rows.push({ depth: i, name: parts[i], isDir: true });
+      }
+    }
+    rows.push({
+      depth: parts.length - 1,
+      name: parts[parts.length - 1],
+      isDir: false,
+      size: f.content.length,
+    });
+  }
+  return rows;
 }
 
 export default function SessionPage() {
@@ -561,7 +611,7 @@ export default function SessionPage() {
                   </div>
                 ) : (
                   <div key={m.id} className="ws-msg ws-msg--agent">
-                    <div className="ws-agent-avatar">T</div>
+                    <div className="ws-agent-avatar">F</div>
                     <div className="ws-agent-body">
                       <div className="ws-agent-meta">
                         <span className="ws-agent-name">Frank</span>
@@ -571,7 +621,8 @@ export default function SessionPage() {
                       </div>
                       <p className="ws-agent-text">{m.content}</p>
 
-                      {Array.isArray(m.metadata?.plan) ? (
+                      {Array.isArray(m.metadata?.plan) &&
+                      (m.metadata.plan as string[]).length > 0 ? (
                         <div className="ws-plan">
                           <span className="ws-block-label">Plan</span>
                           <ul>
@@ -585,19 +636,86 @@ export default function SessionPage() {
                         </div>
                       ) : null}
 
+                      {parseCommands(m.metadata).length > 0 && (
+                        <div className="ws-terminal">
+                          <span className="ws-block-label">Terminal</span>
+                          <div className="ws-terminal-body">
+                            {parseCommands(m.metadata).map((c, ci) => (
+                              <div key={ci} className="ws-terminal-run">
+                                <motion.div
+                                  className="ws-terminal-line ws-terminal-line--cmd"
+                                  initial={{ opacity: 0 }}
+                                  animate={{ opacity: 1 }}
+                                  transition={{ duration: 0.2, delay: ci * 0.15 }}
+                                >
+                                  <span className="ws-terminal-prompt">$</span>
+                                  {c.command}
+                                  <span
+                                    className={`ws-terminal-exit${
+                                      c.exitCode === 0 ? " ws-terminal-exit--ok" : " ws-terminal-exit--err"
+                                    }`}
+                                  >
+                                    exit {c.exitCode}
+                                  </span>
+                                </motion.div>
+                                {c.stdout &&
+                                  c.stdout.split("\n").filter(Boolean).map((line, li) => (
+                                    <motion.div
+                                      key={`o-${li}`}
+                                      className="ws-terminal-line"
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      transition={{ duration: 0.15, delay: ci * 0.15 + 0.1 + li * 0.03 }}
+                                    >
+                                      {line}
+                                    </motion.div>
+                                  ))}
+                                {c.stderr &&
+                                  c.stderr.split("\n").filter(Boolean).map((line, li) => (
+                                    <motion.div
+                                      key={`e-${li}`}
+                                      className="ws-terminal-line ws-terminal-line--err"
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      transition={{ duration: 0.15, delay: ci * 0.15 + 0.1 + li * 0.03 }}
+                                    >
+                                      {line}
+                                    </motion.div>
+                                  ))}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {parseFiles(m.metadata).length > 0 && (
                         <div className="ws-artifact">
                           <span className="ws-block-label">Artifacts</span>
-                          <div className="ws-artifact-files">
-                            {parseFiles(m.metadata).map((f) => (
-                              <div key={f.path} className="ws-file">
-                                <File size={14} />
-                                <span className="ws-file-path">{f.path}</span>
-                                <span className="ws-file-size">
-                                  {formatSize(f.content.length)}
-                                </span>
-                              </div>
-                            ))}
+                          <div className="ws-artifact-files ws-file-tree">
+                            {buildFileTreeRows(parseFiles(m.metadata)).map(
+                              (row, i) => (
+                                <motion.div
+                                  key={`${row.depth}-${row.name}-${i}`}
+                                  className={`ws-file${row.isDir ? " ws-file--dir" : ""}`}
+                                  style={{ paddingLeft: 14 + row.depth * 18 }}
+                                  initial={{ opacity: 0, x: -6 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.25, delay: i * 0.05 }}
+                                >
+                                  {row.isDir ? (
+                                    <Folder size={14} />
+                                  ) : (
+                                    <File size={14} />
+                                  )}
+                                  <span className="ws-file-path">{row.name}</span>
+                                  {!row.isDir && row.size !== undefined && (
+                                    <span className="ws-file-size">
+                                      {formatSize(row.size)}
+                                    </span>
+                                  )}
+                                </motion.div>
+                              )
+                            )}
                           </div>
                           <button
                             type="button"
@@ -615,7 +733,7 @@ export default function SessionPage() {
               )}
               {typing && (
                 <div className="ws-msg ws-msg--agent">
-                  <div className="ws-agent-avatar">T</div>
+                  <div className="ws-agent-avatar">F</div>
                   <div className="ws-agent-body">
                     <div className="ws-agent-meta">
                       <span className="ws-agent-name">Frank</span>
