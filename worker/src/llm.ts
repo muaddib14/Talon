@@ -165,7 +165,7 @@ async function callOpenAi(
   const raw = await res.text();
   const cleaned = raw.replace(/\n?data:\s*\[DONE\]\s*$/i, "").trim();
   const data = JSON.parse(cleaned) as {
-    choices: {
+    choices?: {
       message: {
         content: string | null;
         tool_calls?: {
@@ -174,7 +174,14 @@ async function callOpenAi(
         }[];
       };
     }[];
+    error?: { message?: string };
   };
+
+  if (!Array.isArray(data.choices) || data.choices.length === 0) {
+    throw new Error(
+      `Provider returned no choices: ${data.error?.message || cleaned.slice(0, 300)}`
+    );
+  }
 
   const message = data.choices[0]?.message;
   const toolCalls: ToolCall[] = [];
